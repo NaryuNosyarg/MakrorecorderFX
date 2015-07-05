@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.saxsys.MakrorecorderFX.view.MainView">
    <children>
       <SplitPane dividerPositions="0.2760511882998172" layoutY="40.0" prefHeight="360.0" prefWidth="600.0">
         <items>
@@ -17,22 +17,22 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <ListView fx:id="TestCaseListView" layoutY="37.0" prefHeight="321.0" prefWidth="162.0" />
+                  <ListView fx:id="testCaseListView" layoutY="37.0" prefHeight="321.0" prefWidth="162.0" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <Button fx:id="RecordButton" alignment="CENTER" mnemonicParsing="false" onAction="#Record" prefHeight="53.0" prefWidth="151.0" text="Aufnehmen">
+                  <Button fx:id="recordButton" alignment="CENTER" mnemonicParsing="false" onAction="#record" prefHeight="53.0" prefWidth="151.0" text="Aufnehmen">
                      <font>
                         <Font size="21.0" />
                      </font>
                   </Button>
                   <Separator layoutX="-7.0" layoutY="48.0" prefHeight="10.0" prefWidth="444.0" />
-                  <TableView fx:id="TestStepTableView" layoutY="52.0" prefHeight="307.0" prefWidth="430.0">
+                  <TableView fx:id="testStepTableView" layoutY="52.0" prefHeight="307.0" prefWidth="430.0">
                     <columns>
-                      <TableColumn fx:id="ActionColumn" prefWidth="111.0" text="Aktion" />
-                      <TableColumn fx:id="TargetColumn" prefWidth="156.0" text="Ziel" />
-                        <TableColumn fx:id="ValueColumn" prefWidth="163.0" text="Wert" />
+                      <TableColumn fx:id="actionColumn" prefWidth="111.0" text="Aktion" />
+                      <TableColumn fx:id="targetColumn" prefWidth="156.0" text="Ziel" />
+                        <TableColumn fx:id="valueColumn" prefWidth="163.0" text="Wert" />
                     </columns>
                   </TableView>
                </children>
