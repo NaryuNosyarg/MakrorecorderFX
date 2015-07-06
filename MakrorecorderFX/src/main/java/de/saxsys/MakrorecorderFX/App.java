@@ -32,13 +32,15 @@ public class App extends Application {
 
 		Testfallverwaltung verwaltung = new Testfallverwaltung();
 		easyDI.bindInstance(Testfallverwaltung.class, verwaltung);
+
 		/*
 		 * easyDI.bindProvider(Testfallverwaltung.class, new
 		 * Provider<Testfallverwaltung>() {
 		 * 
-		 * @Override public Testfallverwaltung get(){ Testfallverwaltung
+		 * @Override public Testfallverwaltung get() { Testfallverwaltung
 		 * verwaltung = new Testfallverwaltung(); return verwaltung; } });
 		 */
+
 		easyDI.bindProvider(Stage.class, new Provider<Stage>() {
 			@Override
 			public Stage get() {
@@ -57,7 +59,8 @@ public class App extends Application {
 	}
 
 	public void showMainView() {
-		ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
+		ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader
+				.fxmlView(MainView.class).load();
 
 		Parent root = viewTuple.getView();
 		stage.setScene(new Scene(root));
