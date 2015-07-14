@@ -62,12 +62,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@FXML
 	public void record() {
-		if (viewModel.isRecording()) {
+		/*if (viewModel.isRecording()) {
 			viewModel.closeOpenFile();
 		} else {
 			viewModel.openFileChooser();
-		}
-
+		}*/
+		viewModel.openRemoteApp();
 	}
 
 }

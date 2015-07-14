@@ -1,5 +1,6 @@
 package de.saxsys.MakrorecorderFX;
 
+
 import javax.inject.Provider;
 
 import de.saxsys.MakrorecorderFX.model.Testfallverwaltung;
@@ -47,6 +48,8 @@ public class App extends Application {
 				return stage;
 			}
 		});
+		
+		easyDI.bindInterface(RemoteAppService.class, RemoteAppServiceMock.class);
 
 		MvvmFX.setCustomDependencyInjector(new Callback<Class<?>, Object>() {
 			@Override
@@ -55,6 +58,7 @@ public class App extends Application {
 			}
 		});
 
+		
 		showMainView();
 	}
 
