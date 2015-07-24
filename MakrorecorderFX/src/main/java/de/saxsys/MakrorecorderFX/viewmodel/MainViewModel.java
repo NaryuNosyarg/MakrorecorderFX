@@ -3,11 +3,18 @@ package de.saxsys.MakrorecorderFX.viewmodel;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.event.*;
+import javafx.scene.input.*;
 import de.saxsys.MakrorecorderFX.RemoteAppService;
+import de.saxsys.MakrorecorderFX.model.EventWrapper;
 import de.saxsys.MakrorecorderFX.model.TestCase;
 import de.saxsys.MakrorecorderFX.model.Testfallverwaltung;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -37,6 +44,12 @@ public class MainViewModel implements ViewModel {
 	private boolean recordingOn = false;
 	private File selectedFile;
 	private RemoteAppService remoteAppService;
+	
+	private List<EventWrapper<? extends Event>> eventList = new ArrayList<>();
+	
+	
+	private Map<String, Node> elements = new HashMap<>();
+	private Node root;
 
 	public MainViewModel(Testfallverwaltung verwaltung, RemoteAppService remoteAppService) {
 		this.verwaltung = verwaltung;
@@ -79,20 +92,36 @@ public class MainViewModel implements ViewModel {
 // }
 
 	public void openRemoteApp() {
+		
+		if(recordingOn) {
+			stop();
+		} else {
+			root = remoteAppService.getRootElement();
+			
+			traverseSceneGraphFromRoot();
+			recordingOn = true;
+		}
 
-		Node root = remoteAppService.getRootElement();
-
-		traverseSceneGraph(root);
 
 	}
 	
-	private void traverseSceneGraph(Node element) {
+	
+	private void recordEvent(EventWrapper<? extends Event> event) {
+		if(isRecording()) {
+			eventList.add(event);
+			traverseSceneGraphFromRoot();
+		}
+	}
+	
+	private void registerListener(Node element) {
 		
 		if(element instanceof Button) {
 			Button button = (Button) element;
 			
 			button.setOnAction(event -> {
 				System.out.println("Button " + button.getId() + " wurde gedrückt");
+				
+				recordEvent(new EventWrapper<ActionEvent>(button.getId(), event));
 			});
 		}
 			
@@ -101,6 +130,22 @@ public class MainViewModel implements ViewModel {
 			
 			textField.setOnKeyTyped(event -> {
 				System.out.println("In Textfeld " + textField.getId() + " wurde getippt:" + event.getCharacter());
+				recordEvent(new EventWrapper<KeyEvent>(textField.getId(), event));
+			});
+			
+			textField.setOnKeyPressed(event -> {
+				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt:" + event.getCode());
+				recordEvent(new EventWrapper< KeyEvent>(textField.getId(), event));
+			});
+			
+			textField.setOnMouseClicked(event -> {
+				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt:" + event.getClickCount());
+				recordEvent(new EventWrapper<MouseEvent>(textField.getId(), event));
+			});
+		
+			textField.setOnMouseClicked(event -> {
+				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt:" + event.getButton());
+				recordEvent(new EventWrapper<MouseEvent>(textField.getId(), event));
 			});
 		}
 		
@@ -109,10 +154,17 @@ public class MainViewModel implements ViewModel {
 			
 			passwordField.setOnKeyTyped(event -> {
 				System.out.println("in Passwordfeld " + passwordField.getId() + " wurde getippt:" + event.getCharacter());
+				recordEvent(new EventWrapper<KeyEvent>(passwordField.getId(), event));
 			});
 		}
-
-		
+	}
+	
+	
+	private void traverseSceneGraphFromRoot(){
+		traverseSceneGraph(root);
+	}
+	
+	private void traverseSceneGraph(Node element) {
 		
 		if(element instanceof Parent) {
 			
@@ -122,6 +174,19 @@ public class MainViewModel implements ViewModel {
 				traverseSceneGraph(child);
 			});
 		}
+		
+		
+		
+		if(element.getId() != null && !element.getId().trim().isEmpty()) {
+			
+			if(! elements.containsKey(element.getId())) {
+				elements.put(element.getId(), element);
+				
+				registerListener(element);
+			}
+		}
+		
+	
 	}
 
 	/*private void openFile(File file) {
@@ -146,12 +211,7 @@ public class MainViewModel implements ViewModel {
 	}
 	
 	public boolean isRecording() {
-
-		if (recordingOn) {
-			return true;
-		} else {
-			return false;
-		}
+		return recordingOn;
 	}
 
 	public ObservableList<TestCase> testCaseListProperty() {
@@ -163,5 +223,42 @@ public class MainViewModel implements ViewModel {
 		return selectedTestCase;
 	}
 	
+	public void stop() {
+		recordingOn = false;
+		
+		System.out.println("Recorded Events:");
+		
+		StringBuilder testFXCode = new StringBuilder();
+		
+		eventList.forEach(eventWrapper -> {
+			System.out.println(eventWrapper.getNodeId() + " => " + eventWrapper.getEvent().toString());
+			
+			
+			Event event = eventWrapper.getEvent();
+			
+			if(event instanceof MouseEvent) {
+				MouseEvent mouseEvent = (MouseEvent) event;
+				
+				testFXCode.append("click(#" + eventWrapper.getNodeId() + ")\n");
+			}
+			
+			if(event instanceof KeyEvent) {
+				KeyEvent keyEvent = (KeyEvent) event;
+				
+				if(keyEvent.getEventType().equals(KeyEvent.KEY_PRESSED)) {
+					
+					testFXCode.append("type(\"" + keyEvent.getText() + "\")\n");
+				
+				}
+				
+			}
+			
+		});
+
+		System.out.println("Unser TestFX-Code:");
+		System.out.println(testFXCode.toString());
+		
+		
+	}
 
 }
