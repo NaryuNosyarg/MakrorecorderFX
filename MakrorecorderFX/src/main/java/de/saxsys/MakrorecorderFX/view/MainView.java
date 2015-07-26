@@ -53,7 +53,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 				return parentStage;
 			}
 		});
-
+		
 	}
 
 	public MainView(Stage stage) {
@@ -68,6 +68,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 			viewModel.openFileChooser();
 		}*/
 		viewModel.openRemoteApp();
+		if(viewModel.isRecording()){
+			recordButton.setText("Stop");
+		} else {
+			recordButton.setText("Aufnehmen");
+		}
+			
 	}
 
 }
