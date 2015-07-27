@@ -1,4 +1,4 @@
-package de.saxsys.MakrorecorderFX.model;
+package de.saxsys.MakrorecorderFX.model.uievents;
 
 import java.time.LocalDateTime;
 
