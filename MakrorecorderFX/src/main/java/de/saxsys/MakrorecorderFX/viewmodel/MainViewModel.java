@@ -1,15 +1,10 @@
 package de.saxsys.MakrorecorderFX.viewmodel;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javafx.event.*;
 import javafx.scene.input.*;
@@ -29,8 +24,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 public class MainViewModel implements ViewModel {
 
@@ -38,11 +31,8 @@ public class MainViewModel implements ViewModel {
 	private ObservableList<TestCase> testCaseList = FXCollections
 			.observableArrayList();
 	private Testfallverwaltung verwaltung;
-	private Desktop desktop = Desktop.getDesktop();
-	private Function<Void, Stage> setParentStageFunction;
 	
 	private boolean recordingOn = false;
-	private File selectedFile;
 	private RemoteAppService remoteAppService;
 	
 	private List<EventWrapper<? extends Event>> eventList = new ArrayList<>();
@@ -71,37 +61,16 @@ public class MainViewModel implements ViewModel {
 		System.out.println(testCaseList);
 	}
 
-	public void setParentStageFunction(
-			Function<Void, Stage> setParentStageFunction) {
-		this.setParentStageFunction = setParentStageFunction;
-	}
-
-		
-//		public void openFileChooser() {
-//		FileChooser fileChooser = new FileChooser();
-//		fileChooser.setTitle("Datei wählen");
-//		fileChooser.setInitialDirectory(new File(System
-//				.getProperty("user.home")));
-//		fileChooser.getExtensionFilters().addAll(
-//				new FileChooser.ExtensionFilter("Javadateien", "*.jar"),
-//				new FileChooser.ExtensionFilter("Alle Dateien", "*.*"));
-//		selectedFile = fileChooser.showOpenDialog(setParentStageFunction.apply(null));
-//		if (selectedFile != null) {
-//			openFile(selectedFile);
-// 		}
-// }
-
 	public void openRemoteApp() {
-		
-		if(recordingOn) {
+
+		if (recordingOn) {
 			stop();
 		} else {
 			root = remoteAppService.getRootElement();
-			
+
 			traverseSceneGraphFromRoot();
 			recordingOn = true;
 		}
-
 
 	}
 	
@@ -123,28 +92,30 @@ public class MainViewModel implements ViewModel {
 				
 				recordEvent(new EventWrapper<ActionEvent>(button.getId(), event));
 			});
+			
+			button.setOnMouseClicked(event -> {
+				System.out.println("Button " + button.getId() + " wurde gedrückt");
+				
+				recordEvent(new EventWrapper<MouseEvent>(button.getId(), event));
+			});
 		}
 			
 		if(element instanceof TextField) {
 			TextField textField = (TextField) element;
 			
 			textField.setOnKeyTyped(event -> {
-				System.out.println("In Textfeld " + textField.getId() + " wurde getippt:" + event.getCharacter());
+				System.out.println("In Textfeld " + textField.getId() + " wurde getippt: " + event.getCharacter());
 				recordEvent(new EventWrapper<KeyEvent>(textField.getId(), event));
 			});
 			
 			textField.setOnKeyPressed(event -> {
-				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt:" + event.getCode());
+				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt: " + event.getCode());
 				recordEvent(new EventWrapper< KeyEvent>(textField.getId(), event));
 			});
 			
-			textField.setOnMouseClicked(event -> {
-				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt:" + event.getClickCount());
-				recordEvent(new EventWrapper<MouseEvent>(textField.getId(), event));
-			});
 		
 			textField.setOnMouseClicked(event -> {
-				System.out.println("In Textfeld " + textField.getId() + " wurde gedrückt:" + event.getButton());
+				System.out.println("In Textfeld " + textField.getId() + " wurde "  + event.getClickCount() + " mal geklickt: " + event.getButton());
 				recordEvent(new EventWrapper<MouseEvent>(textField.getId(), event));
 			});
 		}
@@ -156,54 +127,40 @@ public class MainViewModel implements ViewModel {
 				System.out.println("in Passwordfeld " + passwordField.getId() + " wurde getippt:" + event.getCharacter());
 				recordEvent(new EventWrapper<KeyEvent>(passwordField.getId(), event));
 			});
+			
+			passwordField.setOnMouseClicked(event -> {
+				System.out.println("In Textfeld " + passwordField.getId() + " wurde "  + event.getClickCount() + " mal geklickt: " + event.getButton());
+				recordEvent(new EventWrapper<MouseEvent>(passwordField.getId(), event));
+			});
 		}
 	}
-	
-	
-	private void traverseSceneGraphFromRoot(){
+
+	private void traverseSceneGraphFromRoot() {
 		traverseSceneGraph(root);
 	}
-	
+
 	private void traverseSceneGraph(Node element) {
-		
-		if(element instanceof Parent) {
-			
+
+		if (element instanceof Parent) {
+
 			Parent parent = (Parent) element;
-			
+
 			parent.getChildrenUnmodifiable().forEach(child -> {
 				traverseSceneGraph(child);
 			});
 		}
 		
-		
-		
-		if(element.getId() != null && !element.getId().trim().isEmpty()) {
-			
-			if(! elements.containsKey(element.getId())) {
+		if (element.getId() != null && !element.getId().trim().isEmpty()) {
+
+			if (!elements.containsKey(element.getId())) {
 				elements.put(element.getId(), element);
-				
+
 				registerListener(element);
 			}
 		}
-		
-	
+
 	}
 
-	/*private void openFile(File file) {
-		try {
-			desktop.open(file);
-		} catch (IOException ex) {
-			Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null,
-					ex);
-		}
-		recordingOn = true;
-	}
-	
-
-	public void closeOpenFile() {
-		closeFile(selectedFile);
-		
-	}*/
 	
 	public void closeFile(File file) {
 		//TO DO
@@ -239,15 +196,28 @@ public class MainViewModel implements ViewModel {
 			if(event instanceof MouseEvent) {
 				MouseEvent mouseEvent = (MouseEvent) event;
 				
-				testFXCode.append("click(#" + eventWrapper.getNodeId() + ")\n");
-			}
+				if(mouseEvent.getEventType().equals(MouseEvent.MOUSE_CLICKED) && mouseEvent.getClickCount() == 2){
+					
+					testFXCode.append("doubleClickOn(\"#" + eventWrapper.getNodeId() + "\");\n");
+				}
+				
+				if(mouseEvent.getEventType().equals(MouseEvent.MOUSE_CLICKED) && mouseEvent.getClickCount() == 1 && mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+					
+					testFXCode.append("clickOn(\"#" + eventWrapper.getNodeId() + "\");\n");
+						}
+				
+				if(mouseEvent.getEventType().equals(MouseEvent.MOUSE_CLICKED) && mouseEvent.getClickCount() == 1 && mouseEvent.getButton().equals(MouseButton.SECONDARY)){
+					
+					testFXCode.append("rightClickOn(\"#" + eventWrapper.getNodeId() + "\");\n");
+						}
+					}
 			
 			if(event instanceof KeyEvent) {
 				KeyEvent keyEvent = (KeyEvent) event;
 				
 				if(keyEvent.getEventType().equals(KeyEvent.KEY_PRESSED)) {
 					
-					testFXCode.append("type(\"" + keyEvent.getText() + "\")\n");
+					testFXCode.append("write(\"" + keyEvent.getText() + "\");\n");
 				
 				}
 				
@@ -255,7 +225,7 @@ public class MainViewModel implements ViewModel {
 			
 		});
 
-		System.out.println("Unser TestFX-Code:");
+		System.out.println("Unser TestFX-Code: ");
 		System.out.println(testFXCode.toString());
 		
 		
