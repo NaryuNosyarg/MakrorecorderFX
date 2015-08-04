@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import javafx.event.*;
 import javafx.scene.input.*;
 import de.saxsys.MakrorecorderFX.RemoteAppService;
@@ -24,6 +26,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import com.sun.codemodel.*;
 
 public class MainViewModel implements ViewModel {
 
@@ -61,7 +65,7 @@ public class MainViewModel implements ViewModel {
 		System.out.println(testCaseList);
 	}
 
-	public void openRemoteApp() {
+	public void openRemoteApp() throws Exception {
 
 		if (recordingOn) {
 			stop();
@@ -180,8 +184,9 @@ public class MainViewModel implements ViewModel {
 		return selectedTestCase;
 	}
 	
-	public void stop() {
+	public void stop() throws Exception {
 		recordingOn = false;
+		generateCodeWithCodeModel();
 		
 		System.out.println("Recorded Events:");
 		
@@ -230,5 +235,33 @@ public class MainViewModel implements ViewModel {
 		
 		
 	}
+	
+	 private void generateCodeWithCodeModel() throws Exception{
+		 JCodeModel codeModel = new JCodeModel();
+		 
+		 createTestClass(codeModel);
+		 
+		 File file = new File("src/test/java/");
+	        file.mkdirs();
+
+	        System.out.println(">" + file.getAbsolutePath());
+
+	        codeModel.build(file);
+	 }
+	 
+	 private void createTestClass(JCodeModel codeModel) throws JClassAlreadyExistsException{
+		 final JPackage pack = codeModel._package("de.saxsys.generated");
+		 final JDefinedClass jc = pack._class("LoginAppTest");
+		 
+         JMethod jmCreate = jc.method(JMod.PUBLIC, void.class, "loginTest");
+         
+         /* Adding annotation for the method */
+         //jmCreate.annotate(Test.class);
+
+         JBlock jBlock = jmCreate.body();
+         
+         jBlock.directStatement("varName.setCode(100);");
+
+	 }
 
 }

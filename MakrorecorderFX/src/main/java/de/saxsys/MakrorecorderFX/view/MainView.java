@@ -46,7 +46,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	}
 
 	@FXML
-	public void record() {
+	public void record() throws Exception {
 		viewModel.openRemoteApp();
 		if (viewModel.isRecording()) {
 			recordButton.setText("Stop");
