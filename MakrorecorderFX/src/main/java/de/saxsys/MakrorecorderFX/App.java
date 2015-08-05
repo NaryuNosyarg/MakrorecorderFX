@@ -1,9 +1,12 @@
 package de.saxsys.MakrorecorderFX;
 
-
 import javax.inject.Provider;
 
-import de.saxsys.MakrorecorderFX.model.Testfallverwaltung;
+import de.saxsys.MakrorecorderFX.core.eventprocessing.EventProcessor;
+import de.saxsys.MakrorecorderFX.core.eventprocessing.TestFxEventProcessor;
+import de.saxsys.MakrorecorderFX.core.remoteapp.RemoteAppService;
+import de.saxsys.MakrorecorderFX.core.remoteapp.RemoteAppServiceMock;
+import de.saxsys.MakrorecorderFX.model.TestCaseManagement;
 import de.saxsys.MakrorecorderFX.view.MainView;
 import de.saxsys.MakrorecorderFX.viewmodel.MainViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -31,16 +34,8 @@ public class App extends Application {
 
 		easyDI = new EasyDI();
 
-		Testfallverwaltung verwaltung = new Testfallverwaltung();
-		easyDI.bindInstance(Testfallverwaltung.class, verwaltung);
-
-		/*
-		 * easyDI.bindProvider(Testfallverwaltung.class, new
-		 * Provider<Testfallverwaltung>() {
-		 * 
-		 * @Override public Testfallverwaltung get() { Testfallverwaltung
-		 * verwaltung = new Testfallverwaltung(); return verwaltung; } });
-		 */
+		TestCaseManagement management = new TestCaseManagement();
+		easyDI.bindInstance(TestCaseManagement.class, management);
 
 		easyDI.bindProvider(Stage.class, new Provider<Stage>() {
 			@Override
@@ -48,8 +43,10 @@ public class App extends Application {
 				return stage;
 			}
 		});
-		
+
 		easyDI.bindInterface(RemoteAppService.class, RemoteAppServiceMock.class);
+
+		easyDI.bindInterface(EventProcessor.class, TestFxEventProcessor.class);
 
 		MvvmFX.setCustomDependencyInjector(new Callback<Class<?>, Object>() {
 			@Override
@@ -58,7 +55,6 @@ public class App extends Application {
 			}
 		});
 
-		
 		showMainView();
 	}
 

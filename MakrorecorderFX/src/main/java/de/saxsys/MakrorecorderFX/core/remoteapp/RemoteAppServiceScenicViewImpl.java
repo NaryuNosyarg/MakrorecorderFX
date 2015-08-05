@@ -1,4 +1,4 @@
-package de.saxsys.MakrorecorderFX;
+package de.saxsys.MakrorecorderFX.core.remoteapp;
 
 import javafx.scene.Node;
 

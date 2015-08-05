@@ -1,4 +1,4 @@
-package de.saxsys.MakrorecorderFX;
+package de.saxsys.MakrorecorderFX.core.remoteapp;
 
 import de.saxsys.login.view.LoginView;
 import de.saxsys.mvvmfx.FluentViewLoader;

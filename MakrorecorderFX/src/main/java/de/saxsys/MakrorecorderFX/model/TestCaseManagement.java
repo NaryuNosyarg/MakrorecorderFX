@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 
 @Singleton
-public class Testfallverwaltung {
+public class TestCaseManagement {
 
 	
 	private List<TestCase> testCaseList = new ArrayList<TestCase>();
@@ -17,7 +17,7 @@ public class Testfallverwaltung {
 		return Collections.unmodifiableList(testCaseList);
 	}
 
-public Testfallverwaltung(){
+public TestCaseManagement(){
 	
 	testCaseList.add(new TestCase("01", "TestFall 1", "Beschreibung"));
 }
