@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.saxsys.MakrorecorderFX.model.uievents.EventWrapper;
+import de.saxsys.MakrorecorderFX.core.uievents.EventWrapper;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.scene.Node;

@@ -2,8 +2,8 @@ package de.saxsys.MakrorecorderFX.core.eventprocessing;
 
 import java.util.List;
 
+import de.saxsys.MakrorecorderFX.core.uievents.EventWrapper;
 import javafx.event.Event;
-import de.saxsys.MakrorecorderFX.model.uievents.EventWrapper;
 
 public interface EventProcessor {
 

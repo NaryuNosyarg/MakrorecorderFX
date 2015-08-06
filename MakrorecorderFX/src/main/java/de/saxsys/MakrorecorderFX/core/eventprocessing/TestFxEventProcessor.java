@@ -25,7 +25,7 @@ import javafx.event.Event;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import de.saxsys.MakrorecorderFX.model.uievents.EventWrapper;
+import de.saxsys.MakrorecorderFX.core.uievents.EventWrapper;
 import de.saxsys.login.LoginApp;
 
 public class TestFxEventProcessor implements EventProcessor {
